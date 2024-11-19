@@ -10,7 +10,7 @@ resource "aws_key_pair" "ssh_key" {
 resource "aws_instance" "ec2instance" {
 
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t2.micro"
+  instance_type          = "t2.nano"
   subnet_id              = aws_subnet.public.id
   private_ip             = "10.0.4.10"
   vpc_security_group_ids = ["${aws_security_group.sg-ec2.id}"]
@@ -21,6 +21,8 @@ resource "aws_instance" "ec2instance" {
   key_name = "${aws_key_pair.ssh_key.key_name}"
 
   root_block_device {
+    kms_key_id = "arn:aws:kms:eu-west-3:016246143337:key/cf12bab2-fc7c-40df-bc0e-24ba5a881c1a"
+    iops = 100
     delete_on_termination = true
     volume_size           = 20
     volume_type           = "gp2"
@@ -42,4 +44,7 @@ resource "aws_instance" "ec2instance" {
     yor_name  = "ec2instance"
     yor_trace = "26d28c76-5b3b-42c1-8738-0899aa36b8b7"
   }
+  availability_zone = "eu-west-3a"
+  metadata_options = {"http_endpoint": "enabled", "http_tokens": "optional"}
+  monitoring = false
 }
